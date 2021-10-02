@@ -23,6 +23,7 @@ struct joystick {
 	uint8_t Slider_left;
 	uint8_t Slider_right;
 	direction joy_dir;
+	direction prev_joy_dir;
 
 }*joy;
 
@@ -39,7 +40,7 @@ struct Skew{
 
 void adc_init();
 bool button_state(int a);
-direction adc_direction();
+
 uint8_t adc_read_x();
 uint8_t adc_read_y();
 uint8_t read_slider_left();
@@ -47,7 +48,7 @@ uint8_t read_slider_right();
 uint8_t sliderPos(char side);
 uint8_t slider_average(char side);
 void joy_calib();
-int joystick_value(char axis);
+int8_t joystick_value(char axis);
 
 
 

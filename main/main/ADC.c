@@ -8,7 +8,7 @@
 /************************************************************************DEFINES*************************************************************************/
 #define F_CPU 4.9152e6
 #define ADC_Address 0x1400
-#define filter_length 60
+#define sample_length 60
 /************************************************************************INCLUDES*************************************************************************/
 #include <avr/io.h>
 #include <stdio.h>
@@ -83,21 +83,23 @@ uint8_t read_slider_right(){
 uint8_t slider_average(char side){
 	uint16_t sum = 0;
 
-	for(int i = 0; i < filter_length; i++)
+	for(int i = 0; i < sample_length; i++)
 	{
 		sum += sliderPos(side);
 	}
-	return (uint8_t) (sum/filter_length);
+	return (uint8_t) (sum/sample_length);
 }
 
 uint8_t sliderPos(char side){
 	switch(side){
 		case 'l':
-		return read_slider_left();
+			uint8_t temp_slider_left = slider_average('l');
+			return (uint8_t)(temp_slider_left/2.55);
 		break;
 		
 		case 'r':
-		return read_slider_right();
+			uint8_t temp_slider_right = slider_average('r');
+			return (uint8_t)(temp_slider_right/2.55);
 		break;
 		
 		default:
@@ -109,14 +111,14 @@ uint8_t sliderPos(char side){
 
 
 void joy_calib(){
-	Skew.skew_x_lower = 150;
-	Skew.skew_x_higher = 167;
-	Skew.skew_y_lower = 155;
-	Skew.skew_y_higher = 166;
+	Skew.skew_x_lower = 165;
+	Skew.skew_x_higher = 165;
+	Skew.skew_y_lower = 165;
+	Skew.skew_y_higher = 165;
 	uint8_t buffer = 10;
 	uint8_t temp = 0;
 	
-	for(uint8_t i = 0; i < filter_length; i++){
+	for(uint8_t i = 0; i < sample_length; i++){
 			temp = adc_read_x();
 			if(temp < Skew.skew_x_lower){
 				Skew.skew_x_lower = temp;
@@ -131,7 +133,7 @@ void joy_calib(){
 	Skew.deadzone_bottom_x	= Skew.skew_x_lower - buffer;
 	Skew.deadzone_top_x		= Skew.skew_x_higher + buffer;
 
-	for(uint8_t i = 0; i < filter_length; i++){
+	for(uint8_t i = 0; i < sample_length; i++){
 		temp = adc_read_y();
 		if(temp < Skew.skew_y_lower){
 			Skew.skew_y_lower = temp;
@@ -149,10 +151,10 @@ void joy_calib(){
 
 
 
-int joystick_value(char axis){
-	int adc_x = adc_read_x();
-	int adc_y = adc_read_y();
-	int joy_val = 0;
+int8_t joystick_value(char axis){
+	int8_t adc_x = adc_read_x();
+	int8_t adc_y = adc_read_y();
+	int8_t joy_val = 0;
 	switch(axis){
 	case 'x':
 		if(adc_x > Skew.deadzone_top_x){
@@ -184,3 +186,24 @@ int joystick_value(char axis){
 	}
 	return joy_val;
 }
+
+direction joystick_direction(void){
+	int8_t temp_x = joystick_value('x');
+	int8_t temp_y = joystick_value('y');
+	if(temp_x < -70){
+		return LEFT;
+	}
+	else if(temp_x > 90){
+		return RIGHT;
+	}
+	else if(temp_y < -60){
+		return DOWN;
+	}
+	else if(temp_y > 80){
+		return UP;
+	}
+	else{
+		return IDLE;
+	}
+}
+

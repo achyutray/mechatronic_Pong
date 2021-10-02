@@ -30,14 +30,13 @@ void update_controls()
 	TIMSK	|= (1<<TOIE0);										//Generates an interrupt every 200ms a.k.a 5hz, adequate for capturing joystick changes
 }
 
-// ISR(TIMER0_OVF_vect){
-// 	cli();
-// 	TIFR |= (1<<TOV0);
-// 	counter++;
-// 	if(counter == 4){
-// 		//joy->joy_dir = adc_direction();
-// 		//printf("%d\n\r", adc_direction());
-// 		counter = 0;
-// 	}
-// 
-// }
+ISR(TIMER0_OVF_vect){
+	cli();
+	TIFR |= (1<<TOV0);
+	counter++;
+	if(counter == 4){
+		joy->joy_dir = adc_direction();
+		counter = 0;
+	}
+
+}
