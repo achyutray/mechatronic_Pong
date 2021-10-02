@@ -1,2 +1,8 @@
-# ttk4155_group_38
-Repository for the semester project in the subject TTK4155 Industrial and Embedded System Design
+# TTK4155_group_38
+
+ground = black
+VCC = red
+uart_Tx cable = yellow
+uart_Rx = orange
+Latch_enable[ALE] = blue 
+interconnects_RS232 = white
