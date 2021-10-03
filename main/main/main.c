@@ -24,7 +24,7 @@
 #include "ADC.h"
 #include "LinkedList.h"
 
-const char *DirectionNames[] = { "IDLE", "UP", "DOWN", "LEFT", "R"};
+const char *DirectionNames[] = { "IDLE", "UP", "DOWN", "LEFT", "RIGHT"};
 
 int main(void)
 {
@@ -48,7 +48,13 @@ int main(void)
 	display_arrow(menu, 0);
 	
 	while(1){
-		printf("%d\n\r", joystick_value('y'));
-		_delay_ms(100);
+		// printf("%d\n\r", joystick_value('y'));
+		// _delay_ms(100);
+		if(*flag_update){
+			update_joystick();
+			menu = display_menu(menu);
+			*flag_update = false;
+		}
+		
 	}
 }

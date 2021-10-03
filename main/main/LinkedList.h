@@ -17,6 +17,8 @@ struct cell *display_menu(struct cell *menu);
 
 void display_arrow(struct cell *menu, uint8_t col);
 
+void clearArrow(struct cell *menu, uint8_t col);
+
 struct cell *move_to_next(struct cell *menu);
 
 #endif /* LINKEDLIST_H_ */

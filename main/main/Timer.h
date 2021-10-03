@@ -10,7 +10,12 @@
 #define TIMER_H_
 
 void timer_init();
+
 void update_controls();
+
+void update_joystick(){
+
+bool *flag_update;
 
 
 
