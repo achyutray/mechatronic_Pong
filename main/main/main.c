@@ -52,7 +52,7 @@ int main(void)
 		// _delay_ms(100);
 		if(*flag_update){
 			update_joystick();
-			menu = display_menu(menu);
+			select_menu();
 			*flag_update = false;
 		}
 		

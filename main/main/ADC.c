@@ -207,3 +207,7 @@ direction joystick_direction(void){
 	}
 }
 
+void update_joystick()
+{
+	joy->joy_dir = joystick_direction();	
+}

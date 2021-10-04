@@ -15,6 +15,8 @@ struct cell *create_menu();
 
 struct cell *display_menu(struct cell *menu);
 
+void select_menu();
+
 void display_arrow(struct cell *menu, uint8_t col);
 
 void clearArrow(struct cell *menu, uint8_t col);

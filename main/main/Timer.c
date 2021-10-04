@@ -15,7 +15,7 @@
 #include <stdbool.h>
 #include "ADC.h"
 
-volatile int counter;
+volatile bool *flag_update;
 
 void timer_init(){
 
@@ -24,7 +24,7 @@ void timer_init(){
 	OCR1A = 0b00000000;
 }
 
-void update_controls()
+void update_joy_timer_init()
 {
 	TCCR0	|= (1<<CS02)|(1<<CS00);								//Setting up the joystick update timer
 	TIMSK	|= (1<<TOIE0);										//Generates an interrupt every 200ms a.k.a 5hz, adequate for capturing joystick changes
@@ -35,8 +35,7 @@ ISR(TIMER0_OVF_vect){
 	TIFR |= (1<<TOV0);
 	counter++;
 	if(counter == 4){
-		joy->joy_dir = adc_direction();
-		counter = 0;
+		*flag_update = true;
 	}
 
 }

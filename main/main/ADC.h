@@ -49,6 +49,7 @@ uint8_t sliderPos(char side);
 uint8_t slider_average(char side);
 void joy_calib();
 int8_t joystick_value(char axis);
+direction joystick_direction();
 
 
 

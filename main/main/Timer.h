@@ -11,11 +11,9 @@
 
 void timer_init();
 
-void update_controls();
+void update_joy_timer_init();
 
-void update_joystick(){
-
-bool *flag_update;
+volatile bool *flag_update;
 
 
 
