@@ -37,24 +37,25 @@ int main(void)
 	OLED_init();
 	OLED_reset();
 	joy_calib();
+	DDRB |= (1<<PB3);
 	
 
 	
 	struct cell *menu = create_menu();
-	menu = display_menu(menu);
-	display_arrow(menu, 0);
-	menu = move_to_next(menu);
-	_delay_ms(1000);
-	display_arrow(menu, 0);
+	display_menu(menu);
+// 	display_arrow(menu, 0);
+// 	menu = move_to_next(menu);
+// 	_delay_ms(1000);
+// 	display_arrow(menu, 0);
 	
 	while(1){
-		// printf("%d\n\r", joystick_value('y'));
-		// _delay_ms(100);
-		if(*flag_update){
-			update_joystick();
-			select_menu();
-			*flag_update = false;
-		}
-		
+		//printf("%d\n\r", *flag);
+		if(flag == true){
+		update_joystick();
+		select_menu();
+		flag = false;
+ 		}
+
+				
 	}
 }

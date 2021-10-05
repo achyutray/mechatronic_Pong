@@ -31,7 +31,7 @@ void adc_init(){												//Initializes and updates joystick values at 10hz
 		DDRD	|=	(1<<PD4);
 		TCNT0 = 0x00;
 		sei();
-		//update_controls();
+		update_joy_timer_init();
 }
 
 bool button_state(int a){
@@ -92,12 +92,12 @@ uint8_t slider_average(char side){
 
 uint8_t sliderPos(char side){
 	switch(side){
-		case 'l':
+		case 'l': ;
 			uint8_t temp_slider_left = slider_average('l');
 			return (uint8_t)(temp_slider_left/2.55);
 		break;
 		
-		case 'r':
+		case 'r': ;
 			uint8_t temp_slider_right = slider_average('r');
 			return (uint8_t)(temp_slider_right/2.55);
 		break;
@@ -111,26 +111,24 @@ uint8_t sliderPos(char side){
 
 
 void joy_calib(){
-	Skew.skew_x_lower = 165;
-	Skew.skew_x_higher = 165;
-	Skew.skew_y_lower = 165;
-	Skew.skew_y_higher = 165;
+	Skew.skew_x_lower = 190;
+	Skew.skew_x_higher = 100;
+	Skew.skew_y_lower = 170;
+	Skew.skew_y_higher = 170;
 	uint8_t buffer = 10;
 	uint8_t temp = 0;
 	
 	for(uint8_t i = 0; i < sample_length; i++){
 			temp = adc_read_x();
-			if(temp < Skew.skew_x_lower){
+			if((temp < Skew.skew_x_lower)){
 				Skew.skew_x_lower = temp;
 			}
-			else if(temp > Skew.skew_x_higher){
+			if((temp > Skew.skew_x_higher)){
 				Skew.skew_x_higher = temp;
 			}
-			else{
-			
-			}
+			else{}
 		}
-	Skew.deadzone_bottom_x	= Skew.skew_x_lower - buffer;
+	Skew.deadzone_bottom_x	= Skew.skew_x_lower - 3*buffer;
 	Skew.deadzone_top_x		= Skew.skew_x_higher + buffer;
 
 	for(uint8_t i = 0; i < sample_length; i++){
@@ -138,30 +136,32 @@ void joy_calib(){
 		if(temp < Skew.skew_y_lower){
 			Skew.skew_y_lower = temp;
 		}
-		else if(temp > Skew.skew_y_higher){
+		if(temp > Skew.skew_y_higher){
 			Skew.skew_y_higher = temp;
 		}
-		else{
-			
-		}
+		else{}
 	}
-	Skew.deadzone_bottom_y	= Skew.skew_y_lower - buffer;
+	Skew.deadzone_bottom_y	= Skew.skew_y_lower - 4*buffer;
 	Skew.deadzone_top_y		= Skew.skew_y_higher + buffer;
+	printf("%d\t%d\t%d\t%d\t\n\r",  Skew.deadzone_bottom_x, Skew.deadzone_top_x, Skew.deadzone_bottom_y, Skew.deadzone_top_y);
 }
 
 
 
 int8_t joystick_value(char axis){
-	int8_t adc_x = adc_read_x();
-	int8_t adc_y = adc_read_y();
+	uint8_t adc_x = adc_read_x();
+	uint8_t adc_y = adc_read_y();
 	int8_t joy_val = 0;
 	switch(axis){
 	case 'x':
 		if(adc_x > Skew.deadzone_top_x){
-			 joy_val = ((adc_x - Skew.deadzone_top_x)*100.0/(255.0-Skew.deadzone_top_x));
+			 joy_val = (int8_t)(((adc_x - Skew.deadzone_top_x)*100.0)/(255.0-Skew.deadzone_top_x));
 		}
 		if(adc_x < Skew.deadzone_bottom_x){
-			joy_val = (((adc_x - Skew.deadzone_bottom_x)*100.0/(255.0-Skew.deadzone_bottom_x)));
+			joy_val = (int8_t)((((adc_x - Skew.deadzone_bottom_x)*100.0)/(255.0-Skew.deadzone_bottom_x)));
+			if(joy_val < -99){
+			joy_val = -100;
+			}
 		}
 		if((adc_x < Skew.deadzone_top_x)&&(adc_x > Skew.deadzone_bottom_x)){
 			joy_val = 0;
@@ -170,18 +170,20 @@ int8_t joystick_value(char axis){
 
 		case 'y':
 		if(adc_y > Skew.deadzone_top_y){
-			joy_val = ((adc_y - Skew.deadzone_top_y)*100.0/(255.0-Skew.deadzone_top_y));
+			joy_val = (int8_t)(((adc_y - Skew.deadzone_top_y)*100.0)/(255.0-Skew.deadzone_top_y));
 		}
 		if(adc_y < Skew.deadzone_bottom_y){
-			joy_val =  ((adc_y - Skew.deadzone_bottom_y+30)*100.0/(255.0-Skew.deadzone_bottom_y));
+			joy_val =  (int8_t)(((adc_y - Skew.deadzone_bottom_y)*100.0)/(255.0-Skew.deadzone_bottom_y));
+			if(joy_val < -99){
+				joy_val = -100;
+			}
 		}
-		if((adc_y < Skew.deadzone_top_x)&&(adc_y > Skew.deadzone_bottom_x-30)){
+		if((adc_y < Skew.deadzone_top_x)&&(adc_y > Skew.deadzone_bottom_x)){
 			joy_val = 0;
 		}
 		break;
 
 		default:
-		joy_val = 0;
 		break;
 	}
 	return joy_val;
@@ -190,16 +192,16 @@ int8_t joystick_value(char axis){
 direction joystick_direction(void){
 	int8_t temp_x = joystick_value('x');
 	int8_t temp_y = joystick_value('y');
-	if(temp_x < -70){
+	if(temp_x < -90){
 		return LEFT;
 	}
 	else if(temp_x > 90){
 		return RIGHT;
 	}
-	else if(temp_y < -60){
+	else if(temp_y < -90){
 		return DOWN;
 	}
-	else if(temp_y > 80){
+	else if(temp_y > 90){
 		return UP;
 	}
 	else{

@@ -4,8 +4,6 @@
  * Created: 15.09.2021 13:49:56
  *  Author: mbmartin
  */ 
-
-
 #ifndef ADC_H_
 #define ADC_H_
 
@@ -39,18 +37,26 @@ struct Skew{
 }Skew;
 
 void adc_init();
+
+void joy_calib();
+
+void update_joystick();
+
 bool button_state(int a);
 
 uint8_t adc_read_x();
+
 uint8_t adc_read_y();
+
 uint8_t read_slider_left();
+
 uint8_t read_slider_right();
+
 uint8_t sliderPos(char side);
+
 uint8_t slider_average(char side);
-void joy_calib();
+
 int8_t joystick_value(char axis);
+
 direction joystick_direction();
-
-
-
 #endif /* ADC_H_ */

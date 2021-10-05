@@ -13,7 +13,7 @@ void timer_init();
 
 void update_joy_timer_init();
 
-volatile bool *flag_update;
+volatile bool flag;
 
 
 

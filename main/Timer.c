@@ -14,8 +14,9 @@
 #include <avr/interrupt.h>
 #include <stdbool.h>
 #include "ADC.h"
+volatile uint8_t counter = 0;
+volatile bool flag;
 
-volatile bool *flag_update;
 
 void timer_init(){
 
@@ -34,8 +35,11 @@ ISR(TIMER0_OVF_vect){
 	cli();
 	TIFR |= (1<<TOV0);
 	counter++;
-	if(counter == 4){
-		*flag_update = true;
+	
+	if(counter == 2){
+		counter = 0;
+		flag = true;
+		/*update_joystick();*/
 	}
 
 }
