@@ -1,4 +1,4 @@
-# TTK4155_group_38
+# Connection overview
 
 ground = black
 
